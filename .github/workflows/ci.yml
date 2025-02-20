@@ -31,8 +31,7 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
-          pip install black
-          make install
+          pip install -r requirements.txt
 
       - name: Format Code
         run: make format
