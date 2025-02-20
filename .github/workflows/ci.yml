@@ -1,48 +1,30 @@
 name: Continuous Integration
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
-permissions:
-  contents: write  # Allow commit updates
-  pull-requests: write  # Allow PR updates
-
+  
+permissions: write-all
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install CML
-        uses: iterative/setup-cml@v2
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Format Code
+      - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v2
+      - name: Install Packages
+        run: make install
+      - name: Format
         run: make format
-
-      - name: Train Model
+      - name: Train
         run: make train
-
-      - name: Evaluate Model
+      - name: Evaluation
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
-
       - name: Update Branch
         env:
-          GIT_AUTHOR_NAME: "Lata21"
-          GIT_COMMITTER_NAME: "Lata21"
-          GIT_AUTHOR_EMAIL: "latab2130@gmail.com"
-          GIT_COMMITTER_EMAIL: "latab2130@gmail.com"
-        run: make update-branch
+          NAME: ${{ secrets.USER_NAME }}
+          EMAIL: ${{ secrets.USER_EMAIL }}
+        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
