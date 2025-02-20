@@ -1,9 +1,11 @@
 name: Continuous Deployment
+
 on:
   workflow_run:
     workflows: ["Continuous Integration"]
-    types:
-      - completed
+    types: [completed]
+    branches: [main]
+    conclusion: success
 
   workflow_dispatch:
 
@@ -11,9 +13,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Deployment To Hugging Face
         env:
-          HF: ${{ secrets.HF }}
-        run: make deploy HF=$HF
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: make deploy HF_TOKEN=$HF_TOKEN
