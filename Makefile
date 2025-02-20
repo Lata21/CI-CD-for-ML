@@ -1,9 +1,11 @@
 install:
 	pip install --upgrade pip &&\
-		pip install -r requirements.txt
+		pip install -r requirements.txt &&\
+		pip install black  # ✅ Ensure black is installed
 
-format:	
-	black *.py 
+format:
+	pip show black || pip install black  # ✅ Check if black exists, else install
+	black *.py
 
 train:
 	python train.py
