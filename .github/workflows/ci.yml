@@ -21,9 +21,18 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
+          cache: "pip"
 
-      - name: Install Dependencies
-        run: make install
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install black
+          make install
 
       - name: Format Code
         run: make format
@@ -38,6 +47,6 @@ jobs:
 
       - name: Update Branch with Results
         env:
-          USER_NAME: ${{ secrets.USER_NAME }}
-          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
         run: make update-branch
