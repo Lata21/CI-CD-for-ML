@@ -5,7 +5,7 @@ install:
 
 
 format:
-	pip show black || pip install black  # ✅ Check if black exists, else install
+	pip show black || pip install black   skops # ✅ Check if black exists, else install
 	black *.py
 
 train:
