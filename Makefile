@@ -25,11 +25,13 @@ update-branch:
 	git push origin HEAD:update || echo "No changes to push"
 
 hf-login:
-	git pull origin update
+	git fetch origin update
 	git switch update
+	git pull --rebase origin update || git pull --no-rebase origin update
 	pip install -U "huggingface_hub[cli]"
 	if [ -z "${HF_TOKEN}" ]; then echo "❌ HF_TOKEN is missing! Set it in GitHub Secrets"; exit 1; fi
 	huggingface-cli login --token "${HF_TOKEN}" --add-to-git-credential
+
 
 
 push-hub:
