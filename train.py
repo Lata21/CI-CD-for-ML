@@ -9,7 +9,7 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
-# Try importing skops, otherwise, exit gracefully
+# Try importing skops, otherwise exit gracefully
 try:
     import skops.io as sio
 except ImportError:
@@ -26,7 +26,7 @@ os.makedirs("Model", exist_ok=True)
 # 2️⃣ Load and Shuffle Data
 # ------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get script directory
-DATA_PATH = os.path.join(BASE_DIR, "..", "DATA", "drug200.csv")  # Correct dataset path
+DATA_PATH = os.path.join(BASE_DIR, "DATA", "drug200.csv")  # Adjust dataset path
 
 # Ensure dataset exists
 if not os.path.exists(DATA_PATH):
@@ -89,7 +89,7 @@ plt.savefig("Results/model_results.png", dpi=120)
 # ------------------------
 # 7️⃣ Save and Load Model Securely
 # ------------------------
-MODEL_PATH = os.path.join(BASE_DIR, "..", "Model", "drug_pipeline.skops")
+MODEL_PATH = os.path.join(BASE_DIR, "Model", "drug_pipeline.skops")  # Adjusted model path
 sio.dump(pipe, MODEL_PATH)
 
 # Ensure model file exists
@@ -97,8 +97,9 @@ if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"❌ Model file not found at: {MODEL_PATH}")
 
 with open(MODEL_PATH, "rb") as f:
-    untrusted_types = sio.get_untrusted_types(f)  # Get untrusted types
+    untrusted_types = sio.get_untrusted_types(file=f)  # Get untrusted types correctly
     print("🔍 Untrusted types found:", untrusted_types)
     model = sio.load(f, trusted=untrusted_types)
+
 
 print("✅ Model training and evaluation completed successfully!")
