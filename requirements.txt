@@ -7,6 +7,6 @@ black
 huggingface_hub
 # Remove or update the following line
 cloud-ml-common
- #cloud-ml-sdk==1.0.0
+cloud-ml-sdk==0.3.71
 skops
 cml
