@@ -1,7 +1,8 @@
 install:
 	pip install --upgrade pip &&\
-		pip install -r requirements.txt &&\
-		pip install black  # ✅ Ensure black is installed
+	pip install --no-cache-dir cloud-ml-common==0.0.2 || true &&\
+	pip install -r requirements.txt
+
 
 format:
 	pip show black || pip install black  # ✅ Check if black exists, else install
