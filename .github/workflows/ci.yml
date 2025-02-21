@@ -36,10 +36,18 @@ jobs:
           pip install --no-cache-dir skops  # ✅ Ensure skops is installed
           pip install --no-cache-dir -r requirements.txt
 
-
       - name: Verify skops Installation
         run: |
-          pip show skops || echo "skops is NOT installed!"
+          pip show skops || echo "❌ skops is NOT installed!"
+
+      - name: Verify Dataset Exists
+        run: |
+          if [ ! -f "DATA/drug200.csv" ]; then
+            echo "❌ Dataset missing! Upload 'drug200.csv' to the 'DATA/' folder."
+            exit 1
+          else
+            echo "✅ Dataset found!"
+          fi
 
       - name: Format Code
         run: black --check . || black .

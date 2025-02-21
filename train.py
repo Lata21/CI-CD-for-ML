@@ -9,23 +9,34 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
+# Try importing skops, otherwise, exit gracefully
 try:
     import skops.io as sio
 except ImportError:
-    print("⚠️ skops is not installed! Run `pip install skops` before proceeding.")
+    print("⚠️ 'skops' is not installed! Run `pip install skops` before proceeding.")
     exit(1)
 
-# Ensure directories exist
+# ------------------------
+# 1️⃣ Ensure Directories Exist
+# ------------------------
 os.makedirs("Results", exist_ok=True)
 os.makedirs("Model", exist_ok=True)
 
 # ------------------------
-# 1. Load and Shuffle Data
+# 2️⃣ Load and Shuffle Data
 # ------------------------
-drug_df = pd.read_csv("Data/drug200.csv").sample(frac=1, random_state=125)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get script directory
+DATA_PATH = os.path.join(BASE_DIR, "..", "DATA", "drug200.csv")  # Correct dataset path
+
+# Ensure dataset exists
+if not os.path.exists(DATA_PATH):
+    raise FileNotFoundError(f"❌ Dataset not found at: {DATA_PATH}")
+
+# Load and shuffle data
+drug_df = pd.read_csv(DATA_PATH).sample(frac=1, random_state=125)
 
 # ------------------------
-# 2. Split Data into Features and Target
+# 3️⃣ Split Data into Features and Target
 # ------------------------
 X = drug_df.drop("Drug", axis=1).values
 y = drug_df["Drug"].values
@@ -34,7 +45,7 @@ y = drug_df["Drug"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=125)
 
 # ------------------------
-# 3. Define Preprocessing and Model Pipeline
+# 4️⃣ Define Preprocessing and Model Pipeline
 # ------------------------
 cat_col = [1, 2, 3]  # Categorical feature indices
 num_col = [0, 4]  # Numerical feature indices
@@ -54,21 +65,21 @@ pipe = Pipeline([
 pipe.fit(X_train, y_train)
 
 # ------------------------
-# 4. Model Evaluation
+# 5️⃣ Model Evaluation
 # ------------------------
 predictions = pipe.predict(X_test)
 accuracy = accuracy_score(y_test, predictions)
 f1 = f1_score(y_test, predictions, average="macro")
 
 # Print results
-print(f"Accuracy: {round(accuracy * 100, 2)}% | F1 Score: {round(f1, 2)}")
+print(f"✅ Accuracy: {round(accuracy * 100, 2)}% | F1 Score: {round(f1, 2)}")
 
 # Save metrics to file
 with open("Results/metrics.txt", "w") as outfile:
     outfile.write(f"Accuracy = {round(accuracy, 2)}, F1 Score = {round(f1, 2)}\n")
 
 # ------------------------
-# 5. Generate and Save Confusion Matrix
+# 6️⃣ Generate and Save Confusion Matrix
 # ------------------------
 cm = confusion_matrix(y_test, predictions, labels=pipe.classes_)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=pipe.classes_)
@@ -76,12 +87,18 @@ disp.plot()
 plt.savefig("Results/model_results.png", dpi=120)
 
 # ------------------------
-# 6. Save and Load Model Securely
+# 7️⃣ Save and Load Model Securely
 # ------------------------
-sio.dump(pipe, "Model/drug_pipeline.skops")
+MODEL_PATH = os.path.join(BASE_DIR, "..", "Model", "drug_pipeline.skops")
+sio.dump(pipe, MODEL_PATH)
 
-# Load model with trusted types dynamically
-with open("Model/drug_pipeline.skops", "rb") as f:
+# Ensure model file exists
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"❌ Model file not found at: {MODEL_PATH}")
+
+with open(MODEL_PATH, "rb") as f:
     untrusted_types = sio.get_untrusted_types(f)  # Get untrusted types
-    print("Untrusted types found:", untrusted_types)  # Debugging
+    print("🔍 Untrusted types found:", untrusted_types)
     model = sio.load(f, trusted=untrusted_types)
+
+print("✅ Model training and evaluation completed successfully!")
