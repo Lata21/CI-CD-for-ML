@@ -1,73 +1,30 @@
 name: Continuous Integration
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
-permissions:
-  contents: write
-  pull-requests: write
-
+  
+permissions: write-all
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: "pip"
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make
-
-      - name: Install Python Dependencies
-        run: |
-          pip install --upgrade pip
-          pip install --no-cache-dir --use-deprecated=legacy-resolver -r requirements.txt
-
-
-      - name: Verify skops Installation
-        run: |
-          pip show skops || echo "❌ skops is NOT installed!"
-
-      - name: Verify Dataset Exists
-        run: |
-          if [ ! -f "DATA/drug200.csv" ]; then
-            echo "❌ Dataset missing! Upload 'drug200.csv' to the 'DATA/' folder."
-            exit 1
-          else
-            echo "✅ Dataset found!"
-          fi
-
-      - name: Format Code
-        run: black --check . || black .
-
-      - name: Train Model
+      - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v2
+      - name: Install Packages
+        run: make install
+      - name: Format
+        run: make format
+      - name: Train
         run: make train
-
-      - name: Evaluate Model
+      - name: Evaluation
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make eval
-
-      - name: Update Branch with Results
+      - name: Update Branch
         env:
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "$GIT_USER_NAME"
-          git config --global user.email "$GIT_USER_EMAIL"
-          git add .
-          git commit -m "CI: Auto-update with new results" || echo "No changes to commit"
-          git push origin main || echo "No changes to push"
+          NAME: ${{ secrets.USER_NAME }}
+          EMAIL: ${{ secrets.USER_EMAIL }}
+        run: make update-branch USER_NAME=$NAME USER_EMAIL=$EMAIL
