@@ -33,7 +33,7 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
-          pip install black  # ✅ Ensure black is installed
+          pip install black  skops # ✅ Ensure black is installed
           pip install -r requirements.txt
 
       - name: Format Code
