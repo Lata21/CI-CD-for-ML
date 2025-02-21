@@ -28,7 +28,9 @@ hf-login:
 	git pull origin update
 	git switch update
 	pip install -U "huggingface_hub[cli]"
+	if [ -z "${HF_TOKEN}" ]; then echo "❌ HF_TOKEN is missing! Set it in GitHub Secrets"; exit 1; fi
 	huggingface-cli login --token "${HF_TOKEN}" --add-to-git-credential
+
 
 push-hub:
 	# ✅ Updated to use your Hugging Face username (lata2003)
