@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
@@ -7,7 +8,16 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-import skops.io as sio
+
+try:
+    import skops.io as sio
+except ImportError:
+    print("⚠️ skops is not installed! Run `pip install skops` before proceeding.")
+    exit(1)
+
+# Ensure directories exist
+os.makedirs("Results", exist_ok=True)
+os.makedirs("Model", exist_ok=True)
 
 # ------------------------
 # 1. Load and Shuffle Data
@@ -70,6 +80,8 @@ plt.savefig("Results/model_results.png", dpi=120)
 # ------------------------
 sio.dump(pipe, "Model/drug_pipeline.skops")
 
-# Load model with trusted types
+# Load model with trusted types dynamically
 with open("Model/drug_pipeline.skops", "rb") as f:
-    model = sio.load(f, trusted=["numpy.dtype"])
+    untrusted_types = sio.get_untrusted_types(f)  # Get untrusted types
+    print("Untrusted types found:", untrusted_types)  # Debugging
+    model = sio.load(f, trusted=untrusted_types)

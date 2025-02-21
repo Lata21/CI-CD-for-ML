@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  # ✅ More secure than `write-all`
+  contents: write
   pull-requests: write
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4  # ✅ Use latest version
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,15 +33,16 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
-          pip install --no-cache-dir black skops  # ✅ Ensure fresh install
+          pip install --no-cache-dir skops  # ✅ Ensure skops is installed
           pip install --no-cache-dir -r requirements.txt
 
-      - name: Verify skops Installation  # ✅ Debugging Step
+
+      - name: Verify skops Installation
         run: |
           pip show skops || echo "skops is NOT installed!"
 
       - name: Format Code
-        run: black --check . || black .  # ✅ Prevents pipeline failure
+        run: black --check . || black .
 
       - name: Train Model
         run: make train
