@@ -6,7 +6,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
+)
 import matplotlib.pyplot as plt
 
 # Try importing skops, otherwise exit gracefully
@@ -42,7 +47,9 @@ X = drug_df.drop("Drug", axis=1).values
 y = drug_df["Drug"].values
 
 # Split into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=125)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=125
+)
 
 # ------------------------
 # 4️⃣ Define Preprocessing and Model Pipeline
@@ -50,16 +57,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 cat_col = [1, 2, 3]  # Categorical feature indices
 num_col = [0, 4]  # Numerical feature indices
 
-transform = ColumnTransformer([
-    ("encoder", OrdinalEncoder(), cat_col),
-    ("num_imputer", SimpleImputer(strategy="median"), num_col),
-    ("num_scaler", StandardScaler(), num_col),
-])
+transform = ColumnTransformer(
+    [
+        ("encoder", OrdinalEncoder(), cat_col),
+        ("num_imputer", SimpleImputer(strategy="median"), num_col),
+        ("num_scaler", StandardScaler(), num_col),
+    ]
+)
 
-pipe = Pipeline([
-    ("preprocessing", transform),
-    ("model", RandomForestClassifier(n_estimators=100, random_state=125)),
-])
+pipe = Pipeline(
+    [
+        ("preprocessing", transform),
+        ("model", RandomForestClassifier(n_estimators=100, random_state=125)),
+    ]
+)
 
 # Train the model
 pipe.fit(X_train, y_train)
@@ -89,7 +100,9 @@ plt.savefig("Results/model_results.png", dpi=120)
 # ------------------------
 # 7️⃣ Save and Load Model Securely
 # ------------------------
-MODEL_PATH = os.path.join(BASE_DIR, "Model", "drug_pipeline.skops")  # Adjusted model path
+MODEL_PATH = os.path.join(
+    BASE_DIR, "Model", "drug_pipeline.skops"
+)  # Adjusted model path
 sio.dump(pipe, MODEL_PATH)
 
 # Ensure model file exists
