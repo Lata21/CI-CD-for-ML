@@ -5,8 +5,11 @@ matplotlib
 seaborn
 black
 huggingface_hub
-# Remove or update the following line
-cloud-ml-common
-cloud-ml-sdk==0.3.71
+# ✅ Removed cloud-ml-common (causing conflicts)
+# cloud-ml-common  
+
+# ✅ Install cloud-ml-sdk with a compatible version
+cloud-ml-sdk==0.3.60  
+
 skops
 cml
