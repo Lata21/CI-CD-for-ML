@@ -25,15 +25,18 @@ update-branch:
 	git push origin HEAD:update || echo "No changes to push"
 
 hf-login:
-	pip install -U "huggingface_hub[cli]"
 	git pull origin update
 	git switch update
+	pip install -U "huggingface_hub[cli]"
 	huggingface-cli login --token "${HF_TOKEN}" --add-to-git-credential
 
 push-hub:
-	huggingface-cli upload kingabzpro/Drug-Classification ./App --repo-type=space --commit-message="Sync App files"
-	huggingface-cli upload kingabzpro/Drug-Classification ./Model --repo-type=space --commit-message="Sync Model"
-	huggingface-cli upload kingabzpro/Drug-Classification ./Results --repo-type=space --commit-message="Sync Metrics"
+	# ✅ Updated to use your Hugging Face username (lata2003)
+	HF_REPO="lata2003/Drug-Classification"
+
+	huggingface-cli upload $$HF_REPO ./App --repo-type=space --commit-message="Sync App files"
+	huggingface-cli upload $$HF_REPO ./Model --repo-type=space --commit-message="Sync Model"
+	huggingface-cli upload $$HF_REPO ./Results --repo-type=space --commit-message="Sync Metrics"
 
 deploy: hf-login push-hub
 
