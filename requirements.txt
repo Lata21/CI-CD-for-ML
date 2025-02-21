@@ -1,15 +1,6 @@
-numpy
 pandas
 scikit-learn
+numpy
 matplotlib
-seaborn
-black
-huggingface_hub
-# ✅ Removed cloud-ml-common (causing conflicts)
-# cloud-ml-common  
-
-# ✅ Install cloud-ml-sdk with a compatible version
-cloud-ml-sdk==0.3.60  
-
 skops
-cml
+black
