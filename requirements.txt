@@ -8,4 +8,4 @@ huggingface_hub
 # Remove or update the following line
 cloud-ml-common==0.0.2
 #cloud-ml-sdk==1.0.0
-skops
+skopsskops
