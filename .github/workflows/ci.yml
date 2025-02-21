@@ -33,8 +33,12 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
-          pip install black  skops # ✅ Ensure black is installed
-          pip install -r requirements.txt
+          pip install --no-cache-dir black skops  # ✅ Ensure fresh install
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Verify skops Installation  # ✅ Debugging Step
+        run: |
+          pip show skops || echo "skops is NOT installed!"
 
       - name: Format Code
         run: black --check . || black .  # ✅ Prevents pipeline failure
