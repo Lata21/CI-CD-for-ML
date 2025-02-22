@@ -21,18 +21,19 @@ update-branch:
 	git add .
 	git commit -m "Update with new results" || echo "No changes to commit"
 	git push origin HEAD:update || echo "No changes to push"
-
+	
 hf-login:
 	git fetch origin update
 	git switch update
 	git pull --rebase origin update || git pull --no-rebase origin update
 	pip install -U "huggingface_hub[cli]"
 	which huggingface-cli || echo "❌ huggingface-cli is not installed correctly!"
-	if [[ -z "${HF_TOKEN}" ]]; then \
+	if [ -z "${HF_TOKEN}" ]; then \
 	    echo "❌ HF_TOKEN is missing! Ensure it's set in GitHub Secrets and accessible in CI/CD."; \
 	    exit 1; \
 	fi
 	huggingface-cli login --token "${HF_TOKEN}" --add-to-git-credential
+
 
 push-hub:
 	# ✅ Updated to use your Hugging Face username (lata2003)
