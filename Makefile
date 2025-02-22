@@ -11,10 +11,8 @@ train:
 eval:
 	echo "## Model Metrics" > report.md
 	cat ./Results/metrics.txt >> report.md
-	
-	echo '\n## Confusion Matrix Plot' >> report.md
+		echo '\n## Confusion Matrix Plot' >> report.md
 	echo '![Confusion Matrix](./Results/model_results.png)' >> report.md
-	
 	cml comment create report.md
 
 update-branch:
@@ -29,18 +27,20 @@ hf-login:
 	git switch update
 	git pull --rebase origin update || git pull --no-rebase origin update
 	pip install -U "huggingface_hub[cli]"
-	if [ -z "${HF_TOKEN}" ]; then echo "❌ HF_TOKEN is missing! Set it in GitHub Secrets"; exit 1; fi
+	which huggingface-cli || echo "❌ huggingface-cli is not installed correctly!"
+	if [[ -z "${HF_TOKEN}" ]]; then \
+	    echo "❌ HF_TOKEN is missing! Ensure it's set in GitHub Secrets and accessible in CI/CD."; \
+	    exit 1; \
+	fi
 	huggingface-cli login --token "${HF_TOKEN}" --add-to-git-credential
-
-
 
 push-hub:
 	# ✅ Updated to use your Hugging Face username (lata2003)
 	HF_REPO="lata2003/Drug-Classification"
 
-	huggingface-cli upload $$HF_REPO ./App --repo-type=space --commit-message="Sync App files"
-	huggingface-cli upload $$HF_REPO ./Model --repo-type=space --commit-message="Sync Model"
-	huggingface-cli upload $$HF_REPO ./Results --repo-type=space --commit-message="Sync Metrics"
+	huggingface-cli upload $HF_REPO ./App --repo-type=space --commit-message="Sync App files"
+	huggingface-cli upload $HF_REPO ./Model --repo-type=space --commit-message="Sync Model"
+	huggingface-cli upload $HF_REPO ./Results --repo-type=space --commit-message="Sync Metrics"
 
 deploy: hf-login push-hub
 
