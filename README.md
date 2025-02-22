@@ -1,5 +1,4 @@
 ---
----
 title: Drug Classification App  # Replace with your app name
 emoji: 🚀  # Choose an emoji that represents your project
 colorFrom: blue  # Change this to your preferred color
